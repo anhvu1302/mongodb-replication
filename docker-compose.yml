@@ -1,0 +1,40 @@
+services:
+  mongo1:
+    image: mongo
+    container_name: mongo1
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./mongo-entrypoint.sh:/usr/local/bin/mongo-entrypoint.sh
+    entrypoint: [ "/bin/bash", "/usr/local/bin/mongo-entrypoint.sh" ]
+
+  mongo2:
+    image: mongo
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./fix-keyfile.sh:/fix-keyfile.sh
+    entrypoint: [ "/fix-keyfile.sh" ]
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--auth", "--keyFile", "/etc/mongo-keyfile" ]
+
+  mongo3:
+    image: mongo
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./fix-keyfile.sh:/fix-keyfile.sh
+    entrypoint: [ "/fix-keyfile.sh" ]
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--auth", "--keyFile", "/etc/mongo-keyfile" ]
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
